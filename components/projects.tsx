@@ -1,6 +1,7 @@
 import { projects, repos } from "@/lib/content";
 import { Reveal } from "@/components/motion";
 import { SectionHead } from "@/components/section-head";
+import { SpotlightCard } from "@/components/spotlight-card";
 import { ArrowUpRight, GitHub } from "@/components/icons";
 
 type RepoMeta = {
@@ -51,7 +52,10 @@ export async function Projects() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {projects.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.08}>
-              <article className="panel tick group flex h-full flex-col p-6">
+              <SpotlightCard
+                as="article"
+                className="panel tick group flex h-full flex-col p-6"
+              >
                 <span className="tick-b" />
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-baseline gap-3">
@@ -90,7 +94,7 @@ export async function Projects() {
                     </span>
                   ))}
                 </div>
-              </article>
+              </SpotlightCard>
             </Reveal>
           ))}
         </div>
