@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { profile, timeline } from "@/lib/content";
+import { Magnetic } from "@/components/motion";
 import { DitherShader } from "@/components/dither-shader";
 import { Scramble, Fps } from "@/components/telemetry";
 import { ArrowUpRight, GitHub, LinkedIn, Mail } from "@/components/icons";
@@ -68,15 +69,22 @@ export function Hero() {
             <span>dur</span>
           </div>
           <div className="border-t border-[var(--line)]">
-            {timeline.map((t) => (
+            {timeline.map((t, i) => (
               <div
                 key={t.org}
                 className="grid grid-cols-[5.2rem_1fr_auto] items-center gap-3 border-b border-[var(--line)] py-2.5 font-mono text-[11.5px]"
               >
                 <span className="truncate text-ink">{t.org}</span>
                 <div className="h-1.5 w-full bg-[var(--line)]">
-                  <div
-                    className={`h-full ${t.live ? "blink" : ""}`}
+                  <motion.div
+                    initial={reduce ? false : { scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{
+                      duration: 0.9,
+                      delay: 0.55 + i * 0.09,
+                      ease: EASE,
+                    }}
+                    className={`h-full origin-left ${t.live ? "blink" : ""}`}
                     style={{
                       width: `${Math.max(8, (t.months / 48) * 100)}%`,
                       background: t.live ? "var(--accent)" : "var(--muted)",
@@ -92,12 +100,14 @@ export function Hero() {
         </motion.div>
 
         <motion.div {...rise(0.44)} className="mt-8 flex flex-wrap gap-3">
-          <a
-            href="#work"
-            className="group inline-flex items-center gap-2 border border-[var(--line-strong)] bg-[var(--surface)] px-5 py-2.5 font-mono text-[12px] text-ink transition-colors hover:border-accent hover:text-accent"
-          >
-            [ SEE_THE_WORK ]
-          </a>
+          <Magnetic className="inline-flex">
+            <a
+              href="#work"
+              className="group inline-flex items-center gap-2 border border-[var(--line-strong)] bg-[var(--surface)] px-5 py-2.5 font-mono text-[12px] text-ink transition-colors hover:border-accent hover:text-accent"
+            >
+              [ SEE_THE_WORK ]
+            </a>
+          </Magnetic>
           <a
             href={`mailto:${profile.email}`}
             className="group inline-flex items-center gap-2 px-2 py-2.5 font-mono text-[12px] text-muted transition-colors hover:text-accent"

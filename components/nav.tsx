@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { profile } from "@/lib/content";
+import { useEffect, useRef, useState } from "react";
 import { Clock } from "@/components/telemetry";
 import { ArrowUpRight } from "@/components/icons";
 
@@ -17,12 +16,39 @@ const CV_URL = "https://cv.mehuldadlani.dev";
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("");
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12);
+      // scroll-progress hairline: direct style write, no re-render
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${p})`;
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // scroll-spy: highlight the section currently in the reading band
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) setActive(`#${e.target.id}`);
+        }
+      },
+      { rootMargin: "-30% 0px -60% 0px" }
+    );
+    for (const l of links) {
+      const el = document.querySelector(l.href);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -44,16 +70,28 @@ export function Nav() {
           </a>
 
           <div className="hidden items-center gap-7 md:flex">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="link-sweep flex items-center gap-1.5 font-mono text-[12px] text-muted transition-colors hover:text-ink"
-              >
-                <span className="text-[10px] text-faint">{l.n}</span>
-                {l.label}
-              </a>
-            ))}
+            {links.map((l) => {
+              const isActive = active === l.href;
+              return (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  aria-current={isActive ? "true" : undefined}
+                  className={`link-sweep flex items-center gap-1.5 font-mono text-[12px] transition-colors hover:text-ink ${
+                    isActive ? "text-ink" : "text-muted"
+                  }`}
+                >
+                  <span
+                    className={`text-[10px] transition-colors ${
+                      isActive ? "text-accent" : "text-faint"
+                    }`}
+                  >
+                    {l.n}
+                  </span>
+                  {l.label}
+                </a>
+              );
+            })}
             <a
               href={CV_URL}
               target="_blank"
@@ -77,14 +115,17 @@ export function Nav() {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="font-mono text-xs text-ink md:hidden"
+            className="-mr-2 px-2 py-3 font-mono text-xs text-ink md:hidden"
             aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
           >
             {open ? "[ CLOSE ]" : "[ MENU ]"}
           </button>
         </nav>
 
         <div
+          id="mobile-menu"
           className={`overflow-hidden border-t border-[var(--line)] bg-[var(--bg-deep)] md:hidden ${
             open ? "max-h-72" : "max-h-0 border-t-transparent"
           } transition-[max-height] duration-400`}
@@ -117,6 +158,14 @@ export function Nav() {
             </div>
           </div>
         </div>
+
+        {/* scroll progress — telemetry hairline */}
+        <div
+          ref={progressRef}
+          aria-hidden
+          className="h-px origin-left bg-accent/60"
+          style={{ transform: "scaleX(0)" }}
+        />
       </div>
     </header>
   );

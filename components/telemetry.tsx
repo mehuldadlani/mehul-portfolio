@@ -44,6 +44,18 @@ export function Clock({ className = "" }: { className?: string }) {
   );
 }
 
+/* One-time console signature for visitors who open devtools */
+export function ConsoleSig() {
+  useEffect(() => {
+    console.log(
+      "%cOPERATIONAL MANIFEST v3.0%c\n> mehuldadlani.dev — Next.js · raw WebGL · Motion\n> Reading the console? Talk shop: mehuldadlani13@gmail.com",
+      "color:#86c6f4;font-family:monospace;letter-spacing:0.2em;",
+      "font-family:monospace;"
+    );
+  }, []);
+  return null;
+}
+
 /* Live FPS meter */
 export function Fps({ className = "" }: { className?: string }) {
   const [fps, setFps] = useState(60);

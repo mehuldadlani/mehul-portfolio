@@ -1,4 +1,4 @@
-import { work } from "@/lib/content";
+import { work, currentYear } from "@/lib/content";
 import { Reveal } from "@/components/motion";
 import { SectionHead } from "@/components/section-head";
 
@@ -6,7 +6,11 @@ export function Work() {
   return (
     <section id="work" className="px-4 py-20 sm:px-6 md:py-28">
       <div className="mx-auto max-w-[1280px]">
-        <SectionHead index="01" title="Active build" meta="selected work · 2023→26" />
+        <SectionHead
+          index="01"
+          title="Active build"
+          meta={`selected work · 2023→${String(currentYear).slice(2)}`}
+        />
 
         <div className="border-t border-[var(--line)]">
           {work.map((w) => (

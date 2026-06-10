@@ -20,18 +20,24 @@ export const education = {
   period: "2021 → 2025",
 };
 
+/* months between a start date and now (or an end date), for live gantt bars */
+function monthsSince(from: string, to?: string) {
+  const a = new Date(from);
+  const b = to ? new Date(to) : new Date();
+  return Math.max(
+    1,
+    (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth())
+  );
+}
+
+export const currentYear = new Date().getFullYear();
+
 /* compact hero timeline (newest first) — months drive the gantt bars */
 export const timeline = [
-  { org: "Klydo", role: "Product Engineer", period: "2025 → Now", months: 9, live: true },
+  { org: "Klydo", role: "Product Engineer", period: "2025 → Now", months: monthsSince("2025-10-01"), live: true },
   { org: "Avex", role: "SDE", period: "2024 → 2025", months: 13, live: false },
   { org: "GoGlobally", role: "Flutter Dev", period: "2023", months: 5, live: false },
   { org: "SRM University", role: "B.Tech CSE", period: "2021 → 2025", months: 48, live: false },
-];
-
-export const stats = [
-  { value: 100, prefix: "", suffix: "K+", decimals: 0, unit: "USERS", label: "app installs shipped to" },
-  { value: 50, prefix: "", suffix: "+", decimals: 0, unit: "DEPLOYS", label: "production releases owned" },
-  { value: 2, prefix: "$", suffix: "K+", decimals: 0, unit: "PRIZES", label: "won across hackathons" },
 ];
 
 export type Work = {
@@ -132,28 +138,29 @@ export const projects: Project[] = [
     blurb:
       "An AI-powered academic profile analyzer: a FastAPI backend and a Flutter app, with CrewAI and ChromaDB driving research analysis, real-time visualization, and multi-level academic summaries.",
     stack: ["FastAPI", "Flutter", "CrewAI", "ChromaDB"],
-    links: [{ label: "GitHub", href: "https://github.com/mehuldadlani" }],
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/mehuldadlani/AI-Powered-Research-Assistant",
+      },
+    ],
   },
   {
     name: "Xfinitive",
     blurb:
       "A Bluetooth IoT app that detects hand motion and delivers real-time alerts to family. 90% of elderly users reported better medication adherence and less anxiety.",
     stack: ["Flutter", "BLE", "IoT"],
-    links: [
-      {
-        label: "Play Store",
-        href: "https://play.google.com/store/apps/details?id=com.xfinitive",
-      },
-      { label: "App Store", href: "https://apps.apple.com/" },
-    ],
+    links: [],
   },
 ];
 
+/* pinned repos — lang is the static fallback; live metadata is fetched
+   from the GitHub API at build time in projects.tsx */
 export const repos = [
-  { name: "GateBounty", lang: "Dart" },
-  { name: "DAO-Com", lang: "Dart" },
-  { name: "Twitt3r", lang: "C++" },
-  { name: "Firebase-Authentication", lang: "Dart" },
+  { name: "GateBounty", lang: "Dart", href: "https://github.com/mehuldadlani/GateBounty" },
+  { name: "DAO-Com", lang: "Dart", href: "https://github.com/mehuldadlani/DAO-Com" },
+  { name: "Twitt3r", lang: "C++", href: "https://github.com/mehuldadlani/Twitt3r" },
+  { name: "Firebase-Authentication", lang: "Dart", href: "https://github.com/mehuldadlani/Firebase-Authentication" },
 ];
 
 export type Award = {
