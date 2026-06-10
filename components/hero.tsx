@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { profile, timeline } from "@/lib/content";
 import { Magnetic } from "@/components/motion";
 import { DitherShader } from "@/components/dither-shader";
-import { Scramble, Fps } from "@/components/telemetry";
+import { Scramble, HoverScramble, Fps } from "@/components/telemetry";
 import { ArrowUpRight, GitHub, LinkedIn, Mail } from "@/components/icons";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -105,7 +105,7 @@ export function Hero() {
               href="#work"
               className="group inline-flex items-center gap-2 border border-[var(--line-strong)] bg-[var(--surface)] px-5 py-2.5 font-mono text-[12px] text-ink transition-colors hover:border-accent hover:text-accent"
             >
-              [ SEE_THE_WORK ]
+              <HoverScramble text="[ SEE_THE_WORK ]" />
             </a>
           </Magnetic>
           <a

@@ -54,6 +54,7 @@ export async function Projects() {
             <Reveal key={p.name} delay={i * 0.08}>
               <SpotlightCard
                 as="article"
+                tilt
                 className="panel tick group flex h-full flex-col p-6"
               >
                 <span className="tick-b" />

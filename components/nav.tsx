@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Clock } from "@/components/telemetry";
+import { Clock, HoverScramble } from "@/components/telemetry";
 import { ArrowUpRight } from "@/components/icons";
 
 const links = [
@@ -88,7 +88,7 @@ export function Nav() {
                   >
                     {l.n}
                   </span>
-                  {l.label}
+                  <HoverScramble text={l.label} />
                 </a>
               );
             })}
