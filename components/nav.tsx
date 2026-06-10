@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { profile } from "@/lib/content";
 import { Clock } from "@/components/telemetry";
+import { ArrowUpRight } from "@/components/icons";
 
 const links = [
   { n: "01", label: "Work", href: "#work" },
@@ -10,6 +11,8 @@ const links = [
   { n: "03", label: "Artifacts", href: "#projects" },
   { n: "04", label: "Contact", href: "#contact" },
 ];
+
+const CV_URL = "https://cv.mehuldadlani.dev";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -51,6 +54,15 @@ export function Nav() {
                 {l.label}
               </a>
             ))}
+            <a
+              href={CV_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="link-sweep inline-flex items-center gap-1 font-mono text-[12px] text-accent transition-colors hover:text-ink"
+            >
+              CV
+              <ArrowUpRight className="h-3 w-3" />
+            </a>
           </div>
 
           <div className="hidden items-center gap-4 font-mono text-[10.5px] text-faint lg:flex">
@@ -89,6 +101,16 @@ export function Nav() {
                 {l.label}
               </a>
             ))}
+            <a
+              href={CV_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 border-b border-[var(--line)] py-3 font-mono text-sm text-accent"
+            >
+              <ArrowUpRight className="h-3.5 w-3.5" />
+              CV / Résumé
+            </a>
             <div className="flex items-center gap-2 py-3 font-mono text-[11px] text-accent">
               <span className="blink h-1.5 w-1.5 rounded-full bg-accent" />
               OPERATIONAL · <Clock />

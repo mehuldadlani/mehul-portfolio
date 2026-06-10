@@ -53,6 +53,14 @@ export function Contact() {
               >
                 <LinkedIn className="h-4 w-4" /> LinkedIn
               </a>
+              <a
+                href="https://cv.mehuldadlani.dev"
+                target="_blank"
+                rel="noreferrer"
+                className="link-sweep inline-flex items-center gap-2 text-muted transition-colors hover:text-accent"
+              >
+                <ArrowUpRight className="h-4 w-4" /> CV
+              </a>
             </div>
           </div>
 
