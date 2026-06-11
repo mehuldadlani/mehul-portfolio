@@ -2,35 +2,37 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "motion/react";
+import NumberFlow from "@number-flow/react";
 
-/* Live clock + date in IST (Bangalore) */
+const TWO_DIGITS = { minimumIntegerDigits: 2, useGrouping: false } as const;
+
+/* Live clock + date in IST (Bangalore) — digits roll via NumberFlow */
 export function Clock({ className = "" }: { className?: string }) {
-  const [now, setNow] = useState<string>("--:--:--");
+  const [t, setT] = useState<{ h: number; m: number; s: number } | null>(null);
   const [date, setDate] = useState<string>("");
 
   useEffect(() => {
+    const timeFmt = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Kolkata",
+    });
+    const dateFmt = new Intl.DateTimeFormat("en-GB", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kolkata",
+    });
     const tick = () => {
       const d = new Date();
-      setNow(
-        new Intl.DateTimeFormat("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: "Asia/Kolkata",
-        }).format(d)
-      );
-      setDate(
-        new Intl.DateTimeFormat("en-GB", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          timeZone: "Asia/Kolkata",
-        })
-          .format(d)
-          .toUpperCase()
-      );
+      const parts = timeFmt.formatToParts(d);
+      const get = (type: string) =>
+        Number(parts.find((p) => p.type === type)?.value ?? 0);
+      setT({ h: get("hour"), m: get("minute"), s: get("second") });
+      setDate(dateFmt.format(d).toUpperCase());
     };
     tick();
     const id = setInterval(tick, 1000);
@@ -39,9 +41,78 @@ export function Clock({ className = "" }: { className?: string }) {
 
   return (
     <span className={className} suppressHydrationWarning>
-      {date} · {now} IST
+      {t ? (
+        <>
+          {date} ·{" "}
+          <NumberFlow value={t.h} format={TWO_DIGITS} style={{ lineHeight: 1 }} />
+          :
+          <NumberFlow value={t.m} format={TWO_DIGITS} style={{ lineHeight: 1 }} />
+          :
+          <NumberFlow value={t.s} format={TWO_DIGITS} style={{ lineHeight: 1 }} />{" "}
+          IST
+        </>
+      ) : (
+        "--:--:-- IST"
+      )}
     </span>
   );
+}
+
+/* Decrypt-on-hover text — restartable scramble for nav links and CTAs */
+export function HoverScramble({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const [out, setOut] = useState(text);
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function start() {
+    if (reduce) return;
+    if (timer.current) clearInterval(timer.current);
+    let frame = 0;
+    const total = 12;
+    timer.current = setInterval(() => {
+      frame++;
+      const revealed = Math.floor((frame / total) * text.length);
+      let s = "";
+      for (let i = 0; i < text.length; i++) {
+        s +=
+          i < revealed || text[i] === " "
+            ? text[i]
+            : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      }
+      setOut(frame >= total ? text : s);
+      if (frame >= total && timer.current) clearInterval(timer.current);
+    }, 26);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timer.current) clearInterval(timer.current);
+    };
+  }, []);
+
+  return (
+    <span className={className} onMouseEnter={start}>
+      {out}
+    </span>
+  );
+}
+
+/* One-time console signature for visitors who open devtools */
+export function ConsoleSig() {
+  useEffect(() => {
+    console.log(
+      "%cOPERATIONAL MANIFEST v3.0%c\n> mehuldadlani.dev — Next.js · raw WebGL · Motion\n> Reading the console? Talk shop: mehuldadlani13@gmail.com",
+      "color:#86c6f4;font-family:monospace;letter-spacing:0.2em;",
+      "font-family:monospace;"
+    );
+  }, []);
+  return null;
 }
 
 /* Live FPS meter */

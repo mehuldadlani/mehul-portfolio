@@ -1,5 +1,5 @@
-import { profile } from "@/lib/content";
-import { Reveal } from "@/components/motion";
+import { profile, currentYear } from "@/lib/content";
+import { Reveal, Magnetic } from "@/components/motion";
 import { Scramble, Clock } from "@/components/telemetry";
 import { ArrowUpRight, GitHub, LinkedIn, Mail } from "@/components/icons";
 
@@ -28,14 +28,16 @@ export function Contact() {
               or just want to talk shop about Flutter or crypto? My inbox is
               open.
             </p>
-            <a
-              href={`mailto:${profile.email}`}
-              className="group mt-7 inline-flex items-center gap-3 border border-[var(--line-strong)] bg-[var(--surface)] px-6 py-4 font-mono text-[14px] text-ink transition-colors hover:border-accent hover:text-accent"
-            >
-              <Mail className="h-5 w-5" />
-              {profile.email}
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </a>
+            <Magnetic className="mt-7 inline-flex">
+              <a
+                href={`mailto:${profile.email}`}
+                className="group inline-flex items-center gap-3 border border-[var(--line-strong)] bg-[var(--surface)] px-6 py-4 font-mono text-[14px] text-ink transition-colors hover:border-accent hover:text-accent"
+              >
+                <Mail className="h-5 w-5" />
+                {profile.email}
+                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </Magnetic>
             <div className="mt-7 flex items-center gap-6 font-mono text-[12px]">
               <a
                 href={profile.github}
@@ -78,7 +80,7 @@ export function Contact() {
         </Reveal>
 
         <div className="mt-16 flex flex-col gap-2 border-t border-[var(--line)] pt-5 font-mono text-[10.5px] text-faint sm:flex-row sm:items-center sm:justify-between">
-          <span>© 2026 MEHUL DADLANI · END OF MANIFEST</span>
+          <span>© {currentYear} MEHUL DADLANI · END OF MANIFEST</span>
           <span className="flex items-center gap-2 text-muted">
             <span className="blink h-1.5 w-1.5 rounded-full bg-accent" />
             <Clock />

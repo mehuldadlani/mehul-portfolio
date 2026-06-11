@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/motion";
 import { SectionHead } from "@/components/section-head";
+import { LiveNumber } from "@/components/live-number";
 
 type Day = { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 };
 
@@ -96,9 +97,10 @@ export async function Activity() {
           {/* header */}
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-[var(--line)] pb-4 font-mono">
             <div className="flex items-baseline gap-2.5">
-              <span className="text-[clamp(1.4rem,3vw,1.9rem)] font-medium tabular-nums leading-none text-ink">
-                {total.toLocaleString()}
-              </span>
+              <LiveNumber
+                value={total}
+                className="text-[clamp(1.4rem,3vw,1.9rem)] font-medium tabular-nums leading-none text-ink"
+              />
               <span className="text-[11px] tracking-[0.04em] text-faint">
                 contributions · last year
               </span>

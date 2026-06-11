@@ -126,7 +126,17 @@ export function DitherShader({ className = "" }: { className?: string }) {
       mouse.tx = (e.clientX - r.left) / r.width;
       mouse.ty = 1.0 - (e.clientY - r.top) / r.height;
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
+    // mouse warp only matters while the loop is drawing
+    if (!reduce) window.addEventListener("mousemove", onMove, { passive: true });
+
+    let lastT = 12.0; // frozen frame for reduced motion
+    function draw(t: number) {
+      lastT = t;
+      gl!.uniform2f(uRes, canvas!.width, canvas!.height);
+      gl!.uniform1f(uTime, t);
+      gl!.uniform2f(uMouse, mouse.x, mouse.y);
+      gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
+    }
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.4);
     function resize() {
@@ -135,6 +145,9 @@ export function DitherShader({ className = "" }: { className?: string }) {
       canvas!.width = Math.max(1, Math.floor(w * dpr));
       canvas!.height = Math.max(1, Math.floor(h * dpr));
       gl!.viewport(0, 0, canvas!.width, canvas!.height);
+      // changing canvas dimensions clears the buffer; repaint so the
+      // frozen reduced-motion frame doesn't go blank on resize
+      draw(lastT);
     }
     resize();
     const ro = new ResizeObserver(resize);
@@ -145,17 +158,10 @@ export function DitherShader({ className = "" }: { className?: string }) {
     function frame(now: number) {
       mouse.x += (mouse.tx - mouse.x) * 0.06;
       mouse.y += (mouse.ty - mouse.y) * 0.06;
-      gl!.uniform2f(uRes, canvas!.width, canvas!.height);
-      gl!.uniform1f(uTime, reduce ? 12.0 : (now - start) / 1000);
-      gl!.uniform2f(uMouse, mouse.x, mouse.y);
-      gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
-      if (!reduce) raf = requestAnimationFrame(frame);
-    }
-    if (reduce) {
-      frame(start + 12000);
-    } else {
+      draw((now - start) / 1000);
       raf = requestAnimationFrame(frame);
     }
+    if (!reduce) raf = requestAnimationFrame(frame);
 
     return () => {
       cancelAnimationFrame(raf);

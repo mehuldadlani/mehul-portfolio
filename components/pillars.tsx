@@ -1,6 +1,7 @@
 import { pillars } from "@/lib/content";
 import { StaggerGroup, StaggerItem } from "@/components/motion";
 import { SectionHead } from "@/components/section-head";
+import { SpotlightCard } from "@/components/spotlight-card";
 
 export function Pillars() {
   return (
@@ -18,7 +19,7 @@ export function Pillars() {
         <StaggerGroup className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {pillars.map((p, i) => (
             <StaggerItem key={p.title}>
-              <div className="panel tick h-full p-6">
+              <SpotlightCard className="panel tick h-full p-6">
                 <span className="tick-b" />
                 <div className="flex items-center justify-between font-mono text-[10.5px] text-faint">
                   <span>MOD_0{i + 1}</span>
@@ -42,7 +43,7 @@ export function Pillars() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </SpotlightCard>
             </StaggerItem>
           ))}
         </StaggerGroup>

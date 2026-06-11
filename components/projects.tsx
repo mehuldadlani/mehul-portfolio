@@ -1,9 +1,42 @@
 import { projects, repos } from "@/lib/content";
 import { Reveal } from "@/components/motion";
 import { SectionHead } from "@/components/section-head";
+import { SpotlightCard } from "@/components/spotlight-card";
 import { ArrowUpRight, GitHub } from "@/components/icons";
 
-export function Projects() {
+type RepoMeta = {
+  stars: number;
+  description: string | null;
+  lang: string | null;
+};
+
+/* live metadata per pinned repo — tokenless, cached for a day,
+   falls back to the static entry in content.ts when rate-limited */
+async function getRepoMeta(name: string): Promise<RepoMeta | null> {
+  try {
+    const res = await fetch(`https://api.github.com/repos/mehuldadlani/${name}`, {
+      next: { revalidate: 86400 },
+      headers: { Accept: "application/vnd.github+json" },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      stargazers_count?: number;
+      description?: string | null;
+      language?: string | null;
+    };
+    return {
+      stars: data.stargazers_count ?? 0,
+      description: data.description ?? null,
+      lang: data.language ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function Projects() {
+  const meta = await Promise.all(repos.map((r) => getRepoMeta(r.name)));
+
   return (
     <section
       id="projects"
@@ -19,7 +52,11 @@ export function Projects() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {projects.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.08}>
-              <article className="panel tick group flex h-full flex-col p-6">
+              <SpotlightCard
+                as="article"
+                tilt
+                className="panel tick group flex h-full flex-col p-6"
+              >
                 <span className="tick-b" />
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-baseline gap-3">
@@ -58,7 +95,7 @@ export function Projects() {
                     </span>
                   ))}
                 </div>
-              </article>
+              </SpotlightCard>
             </Reveal>
           ))}
         </div>
@@ -70,24 +107,39 @@ export function Projects() {
             <span className="dash flex-1" />
           </div>
           <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {repos.map((r, i) => (
-              <li key={r.name}>
-                <a
-                  href="https://github.com/mehuldadlani"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex items-center justify-between gap-3 border-b border-[var(--line)] py-3.5 font-mono transition-colors hover:text-accent sm:[&:nth-child(odd)]:lg:border-r sm:[&:nth-child(odd)]:lg:border-[var(--line)] sm:[&:nth-child(odd)]:lg:pr-4"
-                >
-                  <span className="flex items-center gap-2 text-[13px] text-ink transition-colors group-hover:text-accent">
-                    <span className="text-[10px] text-faint">
-                      {String(i + 1).padStart(2, "0")}
+            {repos.map((r, i) => {
+              const m = meta[i];
+              return (
+                <li key={r.name}>
+                  <a
+                    href={r.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex h-full flex-col gap-1.5 border-b border-[var(--line)] py-3.5 font-mono transition-colors hover:text-accent sm:[&:nth-child(odd)]:lg:border-r sm:[&:nth-child(odd)]:lg:border-[var(--line)] sm:[&:nth-child(odd)]:lg:pr-4 lg:pr-4"
+                  >
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="flex items-center gap-2 text-[13px] text-ink transition-colors group-hover:text-accent">
+                        <span className="text-[10px] text-faint">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        {r.name}
+                      </span>
+                      <span className="flex items-center gap-2 text-[10.5px] text-faint">
+                        {m && m.stars > 0 && (
+                          <span className="text-accent">★ {m.stars}</span>
+                        )}
+                        {m?.lang ?? r.lang}
+                      </span>
                     </span>
-                    {r.name}
-                  </span>
-                  <span className="text-[10.5px] text-faint">{r.lang}</span>
-                </a>
-              </li>
-            ))}
+                    {m?.description && (
+                      <span className="truncate pl-6 text-[10.5px] leading-relaxed text-faint">
+                        {m.description}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </Reveal>
       </div>
